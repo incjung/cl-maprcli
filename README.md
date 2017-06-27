@@ -18,5 +18,23 @@ then in repl session
 (push #p"~/development/swagger/cl-maprcli/" asdf:*central-registry*)
 (ql:quickload :cl-maprcli)
 ```
+
 ## examples
 
+### usages
+`:path` is keyword for rest alarm/list
+`:params` is supporting option if it exists. 
+
+```
+(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
+```
+
+### support help page
+For example, when you want to knwo "alarm list", then 
+```
+(help :/alarm/list)
+```
+### usages
+```
+(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
+```
