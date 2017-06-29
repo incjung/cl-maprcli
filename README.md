@@ -21,9 +21,48 @@ then in repl session
 
 ## examples
 
-### usages
-`:path` is keyword for rest alarm/list
-`:params` is supporting option if it exists. 
+
+### usages1
+
+MapR's `maprcli` syntax is 
+```
+maprcli <command> [<subcommand>...] ?<parameters>
+```
+
+For example, if you want to get information about the specified volume, `maprcli` command can be used.  
+
+```
+maprcli volume info
+    [ -cluster <cluster name> ]
+    [ -output terse | verbose ]
+    [ -path <mount directory> ]
+    [ -name <volume name> ]
+    [ -columns <column name> ]
+```
+
+You must specify either name or path, but not both. 
+
+```
+maprcli volume info -path /
+```
+
+`cl-maprcli` is 
+
+```
+(<command>-?<subcommand> :param-name <param-value>...)
+```
+
+You can get same information with 
+```
+(volume-info :path "/")
+```
+or if you want to get information from another remote server 
+```
+(volume-info :host "https://192.168.2.51:8443/rest" :path "/")
+```
+:host is mcs host 
+
+### usages2
 
 ```
 (show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
@@ -33,8 +72,4 @@ then in repl session
 For example, when you want to knwo "alarm list", then 
 ```
 (help :/alarm/list)
-```
-### usages
-```
-(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
 ```

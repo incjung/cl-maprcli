@@ -31,6 +31,14 @@
 
 ;;(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
 
+(defun rest-call (host path basic-authorization alist)
+  (multiple-value-bind (stream code header)
+      (drakma:http-request (string-downcase  (format nil "~a~a?~a" host path (make-url-param alist))) :basic-authorization basic-authorization :accept "application/json" :content-type "application/json" :want-stream t :method :GET)
+    (if (equal code 200) (progn (setf (flexi-streams:flexi-stream-external-format stream) :utf-8)
+                                (cl-json:decode-json stream))
+        (format t "failed - code : ~a" code))))
+
+
 (defun set-host (host)
   (setf *host* host))
 
@@ -40,9 +48,19 @@
       (get-in (rest items)
               (cdr (assoc (car items) alist)))))
 
-(get-in '(:paths :/alarm/list :get :description)  (cl-json:decode-json-from-source #p"~/development/swagger/cl-swagger-codegen/mapr.json"))
-
 (defun help (path)
   (get-in (list :paths path :get :description) (cl-json:decode-json-from-source #p"~/development/swagger/cl-swagger-codegen/mapr.json")))
 
 ;;(help :/alarm/list)
+
+(defun list-to-alist (olist)
+  (when (and olist (evenp (length olist)))
+    (cons (cons (car olist) (cadr olist)) (list-to-alist (cddr olist)))))
+
+(defun remove-assoc (item alist)
+  (remove-if (lambda (x) (equal (car x) item)) alist))
+
+
+(defun make-url-param (alist)
+  (format nil "~{~a~^&~}" (loop for (a . b) in alist
+      collect (format nil "~a=~a" a b))))
