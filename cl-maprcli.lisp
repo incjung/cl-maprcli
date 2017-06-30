@@ -42,6 +42,8 @@
                                                        do (format t  "~&================================")
                                                        do (mapc (lambda (x) (format t "~&~a : ~a~%" (first x) (cdr x))) c))
                                                  clj))
+                                    ((:json) (progn (pprint (encode-json clj))
+                                                    (encode-json clj)))
                                     (t clj))))
         (format t "failed - code : ~a" code))))
 

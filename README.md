@@ -49,8 +49,13 @@ maprcli volume info -path /
 `cl-maprcli` is 
 
 ```
-(<command>-?<subcommand> :param-name <param-value>...)
+(<command>-?<subcommand> :param-name <param-value>... :host *host* :output :pretty)
 ```
+:host is mcs host 
+:output can be `:pretty`, `:json`, `:list`.
+ - :pretty is used if result has `data` field.
+ - :json is returning json format
+ - :list is default
 
 You can get same information with 
 ```
@@ -62,7 +67,7 @@ or if you want to get information from another remote server
 ```
 :host is mcs host 
 
-### usages2
+### usage 2
 
 ```
 (show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
