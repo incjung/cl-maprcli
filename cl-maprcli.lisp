@@ -31,11 +31,18 @@
 
 ;;(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
 
-(defun rest-call (host path basic-authorization alist)
+(defun rest-call (host path basic-authorization alist output)
   (multiple-value-bind (stream code header)
       (drakma:http-request (string-downcase  (format nil "~a~a?~a" host path (make-url-param alist))) :basic-authorization basic-authorization :accept "application/json" :content-type "application/json" :want-stream t :method :GET)
     (if (equal code 200) (progn (setf (flexi-streams:flexi-stream-external-format stream) :utf-8)
-                                (cl-json:decode-json stream))
+                                (let ((clj (decode-json stream)))
+                                  (case output
+                                    ((:pretty) (progn
+                                                 (loop for c in (cdr (assoc :DATA clj))
+                                                       do (format t  "~&================================")
+                                                       do (mapc (lambda (x) (format t "~&~a : ~a~%" (first x) (cdr x))) c))
+                                                 clj))
+                                    (t clj))))
         (format t "failed - code : ~a" code))))
 
 

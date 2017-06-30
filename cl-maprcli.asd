@@ -8,6 +8,6 @@
                #:cl-json)
   :serial t
   :components ((:file "package")
-               (:file "cl-maprcli")
-               (:file "mapr-api")))
+               (:file "mapr-api")
+               (:file "cl-maprcli")))
 
