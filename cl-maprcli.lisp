@@ -6,6 +6,11 @@
 
 (defparameter *host* "https://192.168.2.51:8443/rest")
 
+
+(defun set-host (host)
+  (setf *host* host))
+
+
 (defun make-url-path (&key host path params)
   (with-output-to-string (*standard-output*)
     (format t "~{~a~^/~}" (list host path))
@@ -14,6 +19,33 @@
 
 ;;(make-url-path :host *host* :path "alarm/list")
 ;;(make-url-path :host *host* :path "alarm/list" :params "aaa=1&aaa=3")
+
+(defun make-url-param (alist)
+  (format nil "~{~a~^&~}" (loop for (a . b) in alist
+                                collect (format nil "~a=~a" a b))))
+
+
+(defun list-to-alist (olist)
+  (when (and olist (evenp (length olist)))
+    (cons (cons (car olist) (cadr olist)) (list-to-alist (cddr olist)))))
+
+
+(defun remove-assoc (item alist)
+  (remove-if (lambda (x) (equal (car x) item)) alist))
+
+
+
+(defun get-in (items alist)
+  "Calls assoc on alist for each thing in items. Returns the cdr of that"
+  (if (endp items) alist
+      (get-in (rest items)
+              (cdr (assoc (car items) alist)))))
+
+(defun help (path)
+  (get-in (list :paths path :get :description) (cl-json:decode-json-from-source #p"~/development/swagger/cl-swagger-codegen/mapr.json")))
+
+;;(help :/alarm/list)
+
 
 (defmacro show-list (&key (host *host*) path params basic-authorization content)
   `(progn ,(print (make-url-path :host host :path path :params params))
@@ -48,28 +80,3 @@
         (format t "failed - code : ~a" code))))
 
 
-(defun set-host (host)
-  (setf *host* host))
-
-(defun get-in (items alist)
-  "Calls assoc on alist for each thing in items. Returns the cdr of that"
-  (if (endp items) alist
-      (get-in (rest items)
-              (cdr (assoc (car items) alist)))))
-
-(defun help (path)
-  (get-in (list :paths path :get :description) (cl-json:decode-json-from-source #p"~/development/swagger/cl-swagger-codegen/mapr.json")))
-
-;;(help :/alarm/list)
-
-(defun list-to-alist (olist)
-  (when (and olist (evenp (length olist)))
-    (cons (cons (car olist) (cadr olist)) (list-to-alist (cddr olist)))))
-
-(defun remove-assoc (item alist)
-  (remove-if (lambda (x) (equal (car x) item)) alist))
-
-
-(defun make-url-param (alist)
-  (format nil "~{~a~^&~}" (loop for (a . b) in alist
-      collect (format nil "~a=~a" a b))))
