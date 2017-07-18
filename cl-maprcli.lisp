@@ -4,7 +4,7 @@
 
 ;;; "cl-maprcli" goes here. Hacks and glory await!
 
-(defparameter *host* "https://192.168.2.51:8443/rest")
+(defparameter *host* "https://localhost:8443/rest")
 
 
 (defun set-host (host)
