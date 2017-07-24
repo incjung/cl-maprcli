@@ -4,13 +4,6 @@
 
 ;;; "cl-maprcli" goes here. Hacks and glory await!
 
-(defparameter *host* "https://localhost:8443/rest")
-
-
-(defun set-host (host)
-  (setf *host* host))
-
-
 (defun make-url-path (&key host path params)
   (with-output-to-string (*standard-output*)
     (format t "~{~a~^/~}" (list host path))
@@ -24,16 +17,12 @@
   (format nil "~{~a~^&~}" (loop for (a . b) in alist
                                 collect (format nil "~a=~a" a b))))
 
-
 (defun list-to-alist (olist)
   (when (and olist (evenp (length olist)))
     (cons (cons (car olist) (cadr olist)) (list-to-alist (cddr olist)))))
 
-
 (defun remove-assoc (item alist)
   (remove-if (lambda (x) (equal (car x) item)) alist))
-
-
 
 (defun get-in (items alist)
   "Calls assoc on alist for each thing in items. Returns the cdr of that"
@@ -64,7 +53,7 @@
 ;;(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
 
 (defun rest-call (host path basic-authorization alist output)
-  (multiple-value-bind (stream code header)
+  (multiple-value-bind (stream code)
       (drakma:http-request (string-downcase  (format nil "~a~a?~a" host path (make-url-param alist))) :basic-authorization basic-authorization :accept "application/json" :content-type "application/json" :want-stream t :method :GET)
     (if (equal code 200) (progn (setf (flexi-streams:flexi-stream-external-format stream) :utf-8)
                                 (let ((clj (decode-json stream)))
@@ -78,5 +67,3 @@
                                                     (encode-json clj)))
                                     (t clj))))
         (format t "failed - code : ~a" code))))
-
-

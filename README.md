@@ -60,6 +60,10 @@ maprcli volume info -path /
 You can get same information with 
 ```
 (volume-info :path "/")
+
+(volume-create :path "/test07" :name "helloworld")
+(volume-info :path "/test07")
+
 ```
 or if you want to get information from another remote server 
 ```
