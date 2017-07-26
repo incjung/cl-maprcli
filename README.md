@@ -69,13 +69,13 @@ or if you want to get information from another remote server
 ```
 (volume-info :host "https://192.168.2.51:8443/rest" :path "/")
 ```
-:host is mcs host 
-
-### usage 2
+:host is mcs host. Or You can change host with `set-host` and the authorization id/pw with `set-authorization`
 
 ```
-(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
+(set-host "https://192.168.2.51:8443/rest")
 ```
+
+
 
 ### support help page
 For example, when you want to knwo "alarm list", then 
