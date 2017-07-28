@@ -19,10 +19,8 @@ then in repl session
 (ql:quickload :cl-maprcli)
 ```
 
-## examples
+## usage
 
-
-### usages1
 
 MapR's `maprcli` syntax is 
 ```
@@ -52,7 +50,14 @@ maprcli volume info -path /
 (<command>-?<subcommand> :param-name <param-value>... :host *host* :output :pretty)
 ```
 :host is mcs host 
-:output can be `:pretty`, `:json`, `:list`.
+:output can be `:clos`, `:pretty`, `:json`, `:list`.
+ - :clos return object that support some functions
+    ```
+     (STATUS class-instance) : status of communication with MCS
+     (DATA class-instance) : information of message body
+     (PRETTY class-instance) : output 
+ 
+    ```
  - :pretty is used if result has `data` field.
  - :json is returning json format
  - :list is default
@@ -61,7 +66,7 @@ You can get same information with
 ```
 (volume-info :path "/")
 
-(volume-create :path "/test07" :name "helloworld")
+(volume-create :path "/test07" :name "helloworld") # create volume 
 (volume-info :path "/test07")
 
 ```
@@ -73,11 +78,12 @@ or if you want to get information from another remote server
 
 ```
 (set-host "https://192.168.2.51:8443/rest")
+(set-authorization '("mapr" "mapr")')
 ```
 
 
 
-### support help page
+## support help page
 For example, when you want to knwo "alarm list", then 
 ```
 (help :/alarm/list)

@@ -1,4 +1,4 @@
-;;;; cl-maprcli.lisp
+
 
 (in-package #:cl-maprcli)
 
@@ -35,35 +35,34 @@
 
 ;;(help :/alarm/list)
 
+(defclass mapr-response ()
+  ((status :accessor status :initarg :status )
+   (total :accessor total :initarg :total)
+   (data :accessor data :initarg :data :initform '())))
 
-(defmacro show-list (&key (host *host*) path params basic-authorization content)
-  `(progn ,(print (make-url-path :host host :path path :params params))
-     (multiple-value-bind (stream code)
-         (http-request ,(make-url-path :host host :path path :params params) :basic-authorization ,basic-authorization :accept "application/json" :content-type "application/json" :content ,content :want-stream t :method :GET)
-            (if (equal code 200)
-                (progn (setf (flexi-streams:flexi-stream-external-format stream) :utf-8)
-                       (let ((clj (decode-json stream)))
-                         (loop for c in (cdr (assoc :DATA clj))
-                               do (format t  "~&================================")
-                               do (mapc (lambda (x) (format t "~&~a : ~a~%" (first x) (cdr x))) c))
-                         clj))
-                (format t "failed - code : ~a" code)))))
+(defmethod set-data ((message mapr-response) obj)
+  (setf (data message) obj))
 
+(defmethod set-status ((message mapr-response) obj)
+  (setf (status message) obj))
 
-;;(show-list :path "alarm/list" :params "summary=0" :basic-authorization '("mapr" "mapr"))
+(defmethod pretty ((message mapr-response))
+  (mapc (lambda (x)
+          (mapc (lambda (y) (format t "~a~%" y)) x)
+          (format t "~&=====================================~%"))
+        (data message)))
 
 (defun rest-call (host path basic-authorization alist output)
   (multiple-value-bind (stream code)
       (drakma:http-request (string-downcase  (format nil "~a~a?~a" host path (make-url-param alist))) :basic-authorization basic-authorization :accept "application/json" :content-type "application/json" :want-stream t :method :GET)
     (if (equal code 200) (progn (setf (flexi-streams:flexi-stream-external-format stream) :utf-8)
-                                (let ((clj (decode-json stream)))
+                                (let ((clj (decode-json stream))
+                                      (message (make-instance 'mapr-response)))
+                                  (set-status message (cdr (assoc :status clj)))
+                                  (set-data message (cdr (assoc :data clj)))
                                   (case output
-                                    ((:pretty) (progn
-                                                 (loop for c in (cdr (assoc :DATA clj))
-                                                       do (format t  "~&================================")
-                                                       do (mapc (lambda (x) (format t "~&~a : ~a~%" (first x) (cdr x))) c))
-                                                 clj))
-                                    ((:json) (progn (pprint (encode-json clj))
-                                                    (encode-json clj)))
+                                    ((:clos) message)
+                                    ((:pretty) (pretty message))
+                                    ((:json) (encode-json clj))
                                     (t clj))))
-        (format t "failed - code : ~a" code))))
+        (format t "Failed - code : ~a" code))))
