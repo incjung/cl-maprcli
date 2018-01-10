@@ -1,4 +1,6 @@
-(in-package #:cl-maprcli)
+;;;; -*- Mode: LISP; Base: 10; Syntax: ANSI-Common-lisp; Package: CL-MAPRCLI -*-
+
+(in-package "cl-maprcli")
 
 
 ;; MapR CLI basic Context info

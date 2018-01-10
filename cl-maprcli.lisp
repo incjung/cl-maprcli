@@ -1,14 +1,14 @@
+;;;; -*- Mode: LISP; Base: 10; Syntax: ANSI-Common-lisp; Package: CL-MAPRCLI -*-
 
-
-(in-package #:cl-maprcli)
+(in-package "cl-maprcli")
 
 ;;; "cl-maprcli" goes here. Hacks and glory await!
 
-(defun make-url-path (&key host path params)
-  (with-output-to-string (*standard-output*)
-    (format t "~{~a~^/~}" (list host path))
-    (when params
-      (format t "?~a" params))))
+;; (defun make-url-path (&key host path params)
+;;   (with-output-to-string (*standard-output*)
+;;     (format t "~{~a~^/~}" (list host path))
+;;     (when params
+;;       (format t "?~a" params))))
 
 ;;(make-url-path :host *host* :path "alarm/list")
 ;;(make-url-path :host *host* :path "alarm/list" :params "aaa=1&aaa=3")
@@ -16,10 +16,6 @@
 (defun make-url-param (alist)
   (format nil "~{~a~^&~}" (loop for (a . b) in alist
                                 collect (format nil "~a=~a" a b))))
-
-(defun list-to-alist (olist)
-  (when (and olist (evenp (length olist)))
-    (cons (cons (car olist) (cadr olist)) (list-to-alist (cddr olist)))))
 
 (defun remove-assoc (item alist)
   (remove-if (lambda (x) (equal (car x) item)) alist))
