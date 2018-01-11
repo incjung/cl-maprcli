@@ -3,7 +3,7 @@
 ## overview
 This project is binding for maprcli and REST binding for Common Lisp. 
 
-`maprcli` is tool for the command-line interface (CLI). And MapR provides REST API by making REST requesting programmatically or in a browser. Please refer to http://maprdocs.mapr.com/home/ReferenceGuide/maprcli-REST-API-Syntax.html
+`maprcli` is a tool for the command-line interface (CLI). And MapR provides REST API by making REST requesting programmatically or in a browser. Please refer to http://maprdocs.mapr.com/home/ReferenceGuide/maprcli-REST-API-Syntax.html
 
 ## install
 cl-maprcli can be installed by quicklisp. 
@@ -40,38 +40,39 @@ You must specify either name or path, but not both.
 maprcli volume info -path /
 ```
 
-`cl-maprcli` is 
+With `cl-maprcli`, You can get same information with 
 
 ```
-(<command>-?<subcommand> :param-name <param-value>... :host *host* :output :pretty)
+(maprcli "/volume/info" :path "/")
+or 
+(volume-info :path "/")
+
+
+(maprcli "volume/create" :path "/test07" :name "helloworld")
+or
+(volume-create :path "/test07" :name "helloworld") # create volume 
+
+(volume-info :path "/test07")
+```
+
+grammar is 
+```
+(maprcli "/<command>/<subcommand>" :param-name <param-value>* [:host *host* :output :pretty])
+or
+(<command>-?<subcommand> :param-name <param-value>* [:host *host* :output :pretty])
 ```
 :host is mcs host 
 :output can be `:clos`, `:pretty`, `:json`, `:list`.
+ - :pretty is used if result has `data` field (default)
+ - :json is returning json format
  - :clos return object that support some functions
     ```
      (STATUS class-instance) : status of communication with MCS
      (DATA class-instance) : information of message body
      (PRETTY class-instance) : output 
- 
     ```
- - :pretty is used if result has `data` field.
- - :json is returning json format
- - :list is default
 
-You can get same information with 
-
-```
-(maprcli "/volume/info" :path "/")
-
-or 
-
-(volume-info :path "/")
-
-(volume-create :path "/test07" :name "helloworld") # create volume 
-(volume-info :path "/test07")
-
-```
-or if you want to get information from another remote server 
+To get information from another remote server:
 ```
 (volume-info :host "https://192.168.2.51:8443/rest" :path "/")
 ```
@@ -82,9 +83,7 @@ or if you want to get information from another remote server
 (set-authorization '("mapr" "mapr")')
 ```
 
-
-
-## support help page
+## help page
 For example, when you want to knwo "alarm list", then 
 ```
 (help :/alarm/list)
