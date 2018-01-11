@@ -68,6 +68,7 @@
 
 ;;(maprcli "/volume/info" :path "/" :output :pretty)
 
+(intern (symbol-name (make-symbol "test")))
 
 (defmacro maprcli-defs (cmd-path)
   "macro for creating maprcli request functions"
@@ -78,12 +79,12 @@
          (rest-call host ,cmd-path basic-authorization alist output)))))
 
 
-;;(macroexpand-1 '(maprcli-defs '/volume/info))
-;;(maprcli-defs "/volume/info")
+;;(macroexpand-1 '(maprcli-defs "/volume/info"))
 
 ;;(set-host "http://maprdemo:8443/rest")
 ;;(|volume-info| :path "/")
 
+;;(maprcli "/table/region/list" :path "/chatbot.prod/insa_master_002" :output :pretty)
 
 
 ;;; MAPR CLI API FUNCTIONS ;;;

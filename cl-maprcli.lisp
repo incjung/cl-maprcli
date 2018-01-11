@@ -3,9 +3,7 @@
 (in-package "cl-maprcli")
 
 (defun make-url-param (alist)
-  "make a URL parameter format with alist
-  ex, (make-url-param '((:a . 1) (:b . 2)))
-  "
+  "make a URL parameter format with alist. ex: (make-url-param '((:a . 1) (:b . 2)))"
   (format nil "~{~a~^&~}" (loop for (a . b) in alist
                                 collect (format nil "~a=~a" a b))))
 
@@ -15,15 +13,14 @@
   (remove-if (lambda (x) (equal (car x) item)) alist))
 
 (defun help (cmd-path)
-  "return docments about maprcli command
-   ex, (help :/alaprm/list)"
+  "return docments about maprcli command. ex: (help :/alaprm/list)"
   (labels ((get-in (items alist)
              (if (endp items) alist
                  (get-in (rest items)
                          (cdr (assoc (car items) alist))))))
-    (get-in (list :paths cmd-path :get :description) (cl-json:decode-json-from-source #p"./mapr.json"))))
+    (get-in (list :paths cmd-path :get :description) (decode-json-from-source #p"./mapr.json"))))
 
-
+;; http response object
 (defclass mapr-response ()
   ((status :accessor status :initarg :status )
    (data :accessor data :initarg :data :initform '())))
@@ -36,16 +33,9 @@
   "setter for MAPR-RESPONSE instance"
   (setf (status message) obj))
 
-;; (defmethod pretty ((message mapr-response))
-;;   (mapc (lambda (x)
-;;           (mapc (lambda (y) (format t "~a~%" y)) x)
-;;           (format t "~&=====================================~%"))
-;;         (data message)))
-
-
 (defmethod pretty ((message mapr-response))
   "print formated output"
-  (format t "~A~%" (status message))
+  (format t "~%~A~%" (status message))
   (loop for (a . b) in (car (data message))
       do (format t "~35,A : ~A ~%" a b)))
 
@@ -63,4 +53,4 @@
                                     ((:pretty) (pretty message))
                                     ((:json) (encode-json clj))
                                     (t clj))))
-        (format t "Failed - code : ~a" code))))
+        (format t "~%==> ~a~a?~a~%FAILED - RETURN CODE : ~A ~%" host path (make-url-param alist) code))))
