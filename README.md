@@ -63,7 +63,12 @@ maprcli volume info -path /
  - :list is default
 
 You can get same information with 
+
 ```
+(maprcli "/volume/info" :path "/")
+
+or 
+
 (volume-info :path "/")
 
 (volume-create :path "/test07" :name "helloworld") # create volume 

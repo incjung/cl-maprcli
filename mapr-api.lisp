@@ -10,6 +10,8 @@
 
 ;; setter/getter context info
 (defun set-host (host)
+  "setter for host name
+   ex, (set-host \"https://192.168.2.51:8443/rest\")"
   (let ((ctx (assoc :host *context*)))
     (when ctx
       (rplacd ctx host))))
@@ -20,22 +22,23 @@
       (rplacd ctx option))))
 
 (defun set-authorization (auth)
+  "setter for autorization info. ex, (set-authorization (list \"mapr\" \"mapr\"))"
   (let ((ctx (assoc :basic-authorization *context*)))
     (when ctx
       (rplacd ctx auth))))
 
-;;(set-host "https://192.168.2.51:8443/rest")
-;;(set-authorization (list "mapr" "mapr"))
-
-
 (defun list-to-alist (olist)
+  "convert list to alist."
   (when (and olist (evenp (length olist)))
     (cons (cons (car olist) (cadr olist)) (list-to-alist (cddr olist)))))
 
 (defun get-val (item alist)
+  "getter for alist"
   (cdr (assoc item alist)))
 
 (defun make-inputformat-from-user (rest)
+  "convert user input list into parameter type.
+   ex, (make-inputformat-from-user '(:a 1 :b 2 :host \"abc\" :basic-authorization '(\"m\" \"m\")))"
   (let* ((alist (list-to-alist rest))
          (output (let ((tmp (get-val :output alist)))
                    (if tmp (progn
@@ -54,11 +57,37 @@
                                      (get-val :basic-authorization *context*)))))
     (values host basic-authorization alist output)))
 
-;;(make-inputformat-from-user '(:a 1 :b 2 :host "abc" :basic-authorization '("m" "m")))
+
+(defmacro maprcli (cmd-path &rest rest)
+  "run maprcli command.
+   ex, (maprcli \"/VOLUME/INFO\" :path \"/\")
+  "
+  `(multiple-value-bind (host basic-authorization alist output)
+       (make-inputformat-from-user ',rest)
+     (rest-call host ,cmd-path basic-authorization alist output)))
+
+;;(maprcli "/volume/info" :path "/" :output :pretty)
+
+
+(defmacro maprcli-defs (cmd-path)
+  "macro for creating maprcli request functions"
+  (let ((function-name (subseq (substitute #\- #\/ cmd-path) 1)))
+    `(defun ,(intern function-name) (&rest rest)
+       (multiple-value-bind (host basic-authorization alist output)
+           (make-inputformat-from-user rest)
+         (rest-call host ,cmd-path basic-authorization alist output)))))
+
+
+;;(macroexpand-1 '(maprcli-defs '/volume/info))
+;;(maprcli-defs "/volume/info")
+
+(set-host "http://maprdemo:8443/rest")
+(|volume-info| :path "/")
+
 
 
 ;;; MAPR CLI API FUNCTIONS ;;;
-
+;;; TODO will be removed
 
 (defun acl-edit (&rest rest)
   (multiple-value-bind (host basic-authorization alist output)
