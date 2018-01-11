@@ -36,8 +36,11 @@
 (defmethod pretty ((message mapr-response))
   "print formated output"
   (format t "~%~A~%" (status message))
-  (loop for (a . b) in (car (data message))
-      do (format t "~35,A : ~A ~%" a b)))
+  (loop for msg in (data message)
+        do (format t "~80,,,'=A~%" "")
+           (loop for (a . b) in msg
+                 do (format t "~35,A : ~A ~%" a b))))
+
 
 (defun rest-call (host path basic-authorization alist output)
   "call http-request with basic authorization and parameters"
