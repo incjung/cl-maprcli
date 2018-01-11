@@ -9,18 +9,14 @@ This project is binding for maprcli and REST binding for Common Lisp.
 cl-maprcli can be installed by quicklisp. 
 
 ```
-mkdir develop
-cd develop
 git clone https://github.com/incjung/cl-maprcli.git
 ```
 then in repl session
 ```
-(push #p"~/development/swagger/cl-maprcli/" asdf:*central-registry*)
-(ql:quickload :cl-maprcli)
+(swank:operate-on-system-for-emacs "cl-maprcli" (quote load-op))
 ```
 
 ## usage
-
 
 MapR's `maprcli` syntax is 
 ```
