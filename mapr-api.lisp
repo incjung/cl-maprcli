@@ -81,8 +81,8 @@
 ;;(macroexpand-1 '(maprcli-defs '/volume/info))
 ;;(maprcli-defs "/volume/info")
 
-(set-host "http://maprdemo:8443/rest")
-(|volume-info| :path "/")
+;;(set-host "http://maprdemo:8443/rest")
+;;(|volume-info| :path "/")
 
 
 
